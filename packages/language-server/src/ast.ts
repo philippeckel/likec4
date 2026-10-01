@@ -284,6 +284,7 @@ export function isParsedLikeC4LangiumDocument(
 }
 
 export function parseMarkdownAsString(node?: ast.MarkdownOrString): string | undefined {
+  // External file refs are only resolved by BaseParser.parseMarkdownOrString.
   return node?.markdown || node?.text
 }
 

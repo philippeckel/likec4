@@ -52,6 +52,7 @@ export function createTestServices(options?: {
           title: projectConfig?.title || 'Test Project',
           contactPerson: projectConfig?.contactPerson || 'Unknown',
           imageAliases: projectConfig?.imageAliases || {},
+          fileAliases: projectConfig?.fileAliases || {},
           exclude: projectConfig?.exclude || ['node_modules'],
           inferTechnologyFromIcon: projectConfig?.inferTechnologyFromIcon,
           implicitViews: projectConfig?.implicitViews ?? false,

@@ -141,6 +141,9 @@ export function removeIndent(str: ast.MarkdownOrString | string | undefined) {
       return {
         txt: dedent(str.text).trim(),
       }
+    case ast.isMarkdownOrString(str) && !!str.file:
+      // External file refs must be resolved by BaseParser.parseMarkdownOrString; sites that only call removeIndent don't support file refs.
+      return undefined
     case ast.isMarkdownOrString(str):
       return {
         txt: '',
@@ -361,8 +364,22 @@ export class BaseParser {
   }
 
   parseMarkdownOrString(markdownOrString: ast.MarkdownOrString | undefined): c4.MarkdownOrString | undefined {
-    if (ast.isMarkdownOrString(markdownOrString)) {
-      return removeIndent(markdownOrString)
+    if (!ast.isMarkdownOrString(markdownOrString)) {
+      return undefined
+    }
+    if (markdownOrString.file) {
+      return this.parseMarkdownFileRef(markdownOrString.file)
+    }
+    return removeIndent(markdownOrString)
+  }
+
+  parseMarkdownFileRef(ref: ast.MarkdownFileRef | undefined): c4.MarkdownOrString | undefined {
+    if (!ref) {
+      return undefined
+    }
+    const resolution = this.services.likec4.ExternalMarkdownLoader.getCache(this.doc).refs.get(ref)
+    if (resolution?.kind === 'ok') {
+      return { md: resolution.content }
     }
     return undefined
   }

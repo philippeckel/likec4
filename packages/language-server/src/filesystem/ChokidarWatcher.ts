@@ -6,10 +6,10 @@ import type { Stats } from 'node:fs'
 import { basename } from 'node:path'
 import PQueue from 'p-queue'
 import { logger as mainLogger } from '../logger'
-import type { LikeC4SharedServices } from '../module'
+import type { LikeC4Services, LikeC4SharedServices } from '../module'
 import { isManualLayoutFile } from './LikeC4ManualLayouts'
 import type { FileSystemWatcher, FileSystemWatcherModuleContext } from './types'
-import { hasLikeC4Ext, insideNodeModulesOrRepo } from './utils'
+import { hasLikeC4Ext, hasMarkdownExt, insideNodeModulesOrRepo } from './utils'
 
 const logger = mainLogger.getChild('chokidar')
 
@@ -19,7 +19,7 @@ export const WithChokidarWatcher: FileSystemWatcherModuleContext = {
 
 const isAnyLikeC4File = (path: string) => {
   const filename = basename(path)
-  return hasLikeC4Ext(filename) || isLikeC4Config(filename) || isManualLayoutFile(filename)
+  return hasLikeC4Ext(filename) || isLikeC4Config(filename) || isManualLayoutFile(filename) || hasMarkdownExt(filename)
 }
 
 /**
@@ -134,6 +134,10 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
         await workspace.DocumentBuilder.update([uri], [])
         break
       }
+      case hasMarkdownExt(filename): {
+        await this.rebuildExternalMarkdownDependents(uri, 'change')
+        break
+      }
       default: {
         logger.warn`Unknown file change: ${path}`
       }
@@ -161,10 +165,29 @@ export class ChokidarFileSystemWatcher implements FileSystemWatcher {
         await workspace.ManualLayouts.handleFileSystemUpdate({ delete: uri })
         break
       }
+      case hasMarkdownExt(filename): {
+        await this.rebuildExternalMarkdownDependents(uri, 'remove')
+        break
+      }
       default: {
         logger.warn`Unknown file removal: ${path}`
       }
     }
+  }
+
+  private async rebuildExternalMarkdownDependents(uri: URI, kind: 'change' | 'remove'): Promise<void> {
+    const languageServices = this.services.ServiceRegistry.all[0] as LikeC4Services | undefined
+    const loader = languageServices?.likec4?.ExternalMarkdownLoader
+    if (!loader) {
+      return
+    }
+    const dependents = loader.dependentsOf(uri.toString())
+    if (dependents.size === 0) {
+      return
+    }
+    logger.debug`external markdown ${kind}: ${uri.toString()} (dependents: ${dependents.size})`
+    const uris = [...dependents].map(d => URI.parse(d))
+    await this.services.workspace.DocumentBuilder.update(uris, [])
   }
 
   private async onRemoveDir(path: string) {

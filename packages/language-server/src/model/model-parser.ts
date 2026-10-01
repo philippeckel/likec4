@@ -82,7 +82,7 @@ export class LikeC4ModelParser extends ADisposable {
               continue
             }
             try {
-              // Force create parser for linked document (if not yet created)
+              await services.likec4.ExternalMarkdownLoader.loadForDocument(doc)
               this.parse(doc)
             } catch (error) {
               logWarnError(error)
@@ -159,6 +159,7 @@ export class LikeC4ModelParser extends ADisposable {
       },
       c4Views: [],
       c4Imports: new MultiMap(Set),
+      c4ExternalMarkdown: doc.c4ExternalMarkdown ?? { refs: new WeakMap(), dependencies: new Set() },
     }
     doc = Object.assign(doc, props)
     const parser = new DocumentParser(

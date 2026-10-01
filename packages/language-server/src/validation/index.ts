@@ -29,6 +29,7 @@ import {
 import { checkElement } from './element'
 import { checkElementRef } from './element-ref'
 import { checkImportsFromPoject } from './imports'
+import { markdownFileRefChecks } from './markdown-file-ref'
 import {
   colorLiteralRuleChecks,
   iconPropertyRuleChecks,
@@ -114,6 +115,7 @@ const isValidatableAstNode = isAnyOf(
   ast.isSpecificationRule,
   ast.isExpressions,
   ast.isColorLiteral,
+  ast.isMarkdownFileRef,
 )
 type ValidatableAstNode = GuardedBy<typeof isValidatableAstNode>
 
@@ -195,6 +197,7 @@ export function registerValidationChecks(services: LikeC4Services) {
     DynamicViewDisplayVariantProperty: dynamicViewDisplayVariant(services),
     ViewRuleRank: viewRuleRankChecks(services),
     ViewOrderProperty: viewOrderChecks(services),
+    MarkdownFileRef: markdownFileRefChecks(services),
   })
   const connection = services.shared.lsp.Connection
   if (connection) {

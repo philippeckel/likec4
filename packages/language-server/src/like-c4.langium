@@ -1162,7 +1162,10 @@ Uri returns string:
   URI_WITH_SCHEMA | URI_RELATIVE | URI_ALIAS;
 
 MarkdownOrString:
-  markdown=MarkdownString | text=String;
+  markdown=MarkdownString | text=String | file=MarkdownFileRef;
+
+MarkdownFileRef:
+  'file' path=String;
 
 CustomColorId returns string:
   IdTerminal |

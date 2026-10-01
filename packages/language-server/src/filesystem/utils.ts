@@ -6,6 +6,10 @@ export function hasLikeC4Ext(path: string) {
   return LikeC4LanguageMetaData.fileExtensions.some((ext) => path !== ext && path.endsWith(ext))
 }
 
+export function hasMarkdownExt(path: string) {
+  return /\.(md|markdown)$/i.test(path)
+}
+
 const nodeModulesOrRepo = ['node_modules', '.git', '.svn', '.yarn', '.pnpm']
 /**
  * Check if the given directory name is a node_modules or repository directory

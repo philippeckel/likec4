@@ -39,6 +39,7 @@ import {
   type LikeC4ModelBuilder,
   DefaultLikeC4ModelBuilder,
   DeploymentsIndex,
+  ExternalMarkdownLoader,
   FqnIndex,
   LastSeenArtifacts,
   LikeC4ModelLocator,
@@ -141,6 +142,7 @@ export interface LikeC4AddedServices {
     ModelLocator: LikeC4ModelLocator
     ModelChanges: LikeC4ModelChanges
     LastSeen: LastSeenArtifacts
+    ExternalMarkdownLoader: ExternalMarkdownLoader
   }
   lsp: {
     // RenameProvider: LikeC4RenameProvider
@@ -205,6 +207,7 @@ export function createLikeC4Module(
       ModelBuilder: bind(DefaultLikeC4ModelBuilder),
       ModelLocator: bind(LikeC4ModelLocator),
       LastSeen: bind(LastSeenArtifacts),
+      ExternalMarkdownLoader: bind(ExternalMarkdownLoader),
     },
     lsp: {
       // RenameProvider: bind(LikeC4RenameProvider),

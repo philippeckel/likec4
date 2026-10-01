@@ -19,6 +19,7 @@ import type {
 } from '@likec4/core/types'
 import JSON5 from 'json5'
 import z from 'zod/v4'
+import { FileAliasesSchema } from './schema.file-alias'
 import { ImageAliasesSchema } from './schema.image-alias'
 import { type IncludeConfig, IncludeSchema } from './schema.include'
 import { LikeC4StylesConfigSchema } from './schema.theme'
@@ -146,6 +147,7 @@ export const LikeC4ProjectJsonConfigSchema = z.object({
     description: 'Project styles customization',
   }),
   imageAliases: ImageAliasesSchema.optional(),
+  fileAliases: FileAliasesSchema.optional(),
   include: IncludeSchema.optional(),
   exclude: z.array(z.string())
     .optional()

@@ -1,4 +1,5 @@
 export * from './deployments-index'
+export * from './ExternalMarkdownLoader'
 export * from './fqn-index'
 export * from './last-seen-artifacts'
 export * from './model-builder'
